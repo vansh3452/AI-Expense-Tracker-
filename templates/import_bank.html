@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">Import Bank Statement</h4>
+                </div>
+                <div class="card-body">
+                    <form method="POST" enctype="multipart/form-data">
+                        <div class="mb-3">
+                            <label class="form-label">Upload CSV File</label>
+                            <input type="file" name="file" class="form-control" accept=".csv" required>
+                            <small class="text-muted">CSV must contain columns: Description, Amount</small>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">Upload Statement</button>
+                    </form>
+                    <div class="mt-3">
+                        <h6>Sample Format:</h6>
+                        <pre class="bg-light p-2 rounded">Date,Description,Amount
+2026-03-10,Starbucks Coffee,5.50
+2026-03-11,Uber Ride,12.00</pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

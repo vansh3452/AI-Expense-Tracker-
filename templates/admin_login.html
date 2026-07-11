@@ -1,0 +1,38 @@
+{% extends "auth_base.html" %}
+
+{% block content %}
+<h4 class="text-center mb-4">Admin Login</h4>
+
+<form method="POST">
+    <div class="mb-3">
+        <label>Email</label>
+        <input class="form-control" name="email" required autofocus>
+    </div>
+
+    <div class="mb-3">
+        <label>Password</label>
+        <div class="input-group">
+            <input id="password" class="form-control" type="password" name="password" required>
+            <button type="button" class="btn btn-outline-secondary" onclick="togglePassword()">👁</button>
+        </div>
+    </div>
+
+    <div class="mb-3 form-check">
+        <input type="checkbox" class="form-check-input" id="remember" name="remember">
+        <label class="form-check-label" for="remember">Remember me</label>
+    </div>
+
+    <button class="btn btn-danger w-100">Login as Admin</button>
+</form>
+
+<div class="text-center mt-3">
+    <a href="{{ url_for('auth.login') }}">Regular User Login</a>
+</div>
+
+<script>
+function togglePassword() {
+    let pass = document.getElementById("password");
+    pass.type = pass.type === "password" ? "text" : "password";
+}
+</script>
+{% endblock %}

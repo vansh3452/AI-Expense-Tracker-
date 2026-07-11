@@ -1,0 +1,107 @@
+{% extends "auth_base.html" %}
+
+{% block content %}
+<h4 class="text-center mb-4">Create Account</h4>
+
+<form method="POST">
+    <div class="mb-3">
+        <label>Username</label>
+        <input class="form-control" name="username" value="{{ username or '' }}" required minlength="3" maxlength="50">
+        <small class="text-muted">3-50 characters (letters, numbers, underscores)</small>
+    </div>
+
+    <div class="mb-3">
+        <label>Email</label>
+        <input class="form-control" name="email" type="email" value="{{ email or '' }}" required>
+    </div>
+
+    <div class="mb-3">
+        <label>Password</label>
+        <div class="input-group">
+            <input id="password" class="form-control" type="password" name="password" required>
+            <button type="button" class="btn btn-outline-secondary" onclick="togglePassword('password')">👁</button>
+        </div>
+        <div id="password-strength" class="mt-2"></div>
+        <div class="password-requirements mt-2">
+            <strong>Password Requirements:</strong>
+            <ul>
+                <li id="req-length">✓ At least 8 characters</li>
+                <li id="req-upper">✓ At least one uppercase letter</li>
+                <li id="req-lower">✓ At least one lowercase letter</li>
+                <li id="req-number">✓ At least one number</li>
+                <li id="req-special">✓ At least one special character</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="mb-3">
+        <label>Confirm Password</label>
+        <div class="input-group">
+            <input id="confirm_password" class="form-control" type="password" name="confirm_password" required>
+            <button type="button" class="btn btn-outline-secondary" onclick="togglePassword('confirm_password')">👁</button>
+        </div>
+        <div id="password-match" class="small mt-1"></div>
+    </div>
+
+    <button class="btn btn-success w-100">Register</button>
+</form>
+
+<div class="text-center mt-3">
+    <a href="{{ url_for('auth.login') }}">Already have an account?</a>
+</div>
+
+<script>
+function togglePassword(id) {
+    let input = document.getElementById(id);
+    input.type = input.type === "password" ? "text" : "password";
+}
+
+const password = document.getElementById('password');
+const confirm = document.getElementById('confirm_password');
+
+function checkStrength() {
+    const pwd = password.value;
+    const requirements = {
+        length: pwd.length >= 8,
+        upper: /[A-Z]/.test(pwd),
+        lower: /[a-z]/.test(pwd),
+        number: /[0-9]/.test(pwd),
+        special: /[!@#$%^&*(),.?":{}|<>]/.test(pwd)
+    };
+
+    document.getElementById('req-length').style.color = requirements.length ? '#28a745' : '#dc3545';
+    document.getElementById('req-upper').style.color = requirements.upper ? '#28a745' : '#dc3545';
+    document.getElementById('req-lower').style.color = requirements.lower ? '#28a745' : '#dc3545';
+    document.getElementById('req-number').style.color = requirements.number ? '#28a745' : '#dc3545';
+    document.getElementById('req-special').style.color = requirements.special ? '#28a745' : '#dc3545';
+
+    const strengthBar = document.getElementById('password-strength');
+    if (pwd.length === 0) {
+        strengthBar.innerHTML = '';
+        return;
+    }
+    const score = Object.values(requirements).filter(Boolean).length;
+    const colors = ['#dc3545', '#fd7e14', '#ffc107', '#20c997', '#28a745'];
+    const texts = ['Very Weak', 'Weak', 'Fair', 'Good', 'Strong'];
+    strengthBar.innerHTML = `<div class="progress"><div class="progress-bar" style="width: ${score*20}%; background-color: ${colors[score-1]};"></div></div>
+                             <small class="text-muted">${texts[score-1]}</small>`;
+}
+
+function checkMatch() {
+    const matchMsg = document.getElementById('password-match');
+    if (confirm.value.length > 0) {
+        if (password.value === confirm.value) {
+            matchMsg.innerHTML = '<span class="text-success">✓ Passwords match</span>';
+        } else {
+            matchMsg.innerHTML = '<span class="text-danger">✗ Passwords do not match</span>';
+        }
+    } else {
+        matchMsg.innerHTML = '';
+    }
+}
+
+password.addEventListener('input', checkStrength);
+password.addEventListener('input', checkMatch);
+confirm.addEventListener('input', checkMatch);
+</script>
+{% endblock %}

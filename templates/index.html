@@ -1,0 +1,141 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-4">Dashboard</h2>
+
+    <!-- Summary Cards -->
+    <div class="row g-4 mb-4">
+        <div class="col-md-4">
+            <div class="card shadow-sm border-0">
+                <div class="card-body text-center">
+                    <h6 class="text-muted">Total Expenses (All Time)</h6>
+                    <h2 class="fw-bold text-primary">₹ {{ total }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card shadow-sm border-0">
+                <div class="card-body text-center">
+                    <h6 class="text-muted">This Month</h6>
+                    <h2 class="fw-bold text-success">₹ {{ monthly_total }}</h2>
+                </div>
+            </div>
+        </div>
+        {% if prediction %}
+        <div class="col-md-4">
+            <div class="card shadow-sm border-0">
+                <div class="card-body text-center">
+                    <h6 class="text-muted">Predicted Next Month</h6>
+                    <h2 class="fw-bold text-warning">₹ {{ prediction }}</h2>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Budget Alert -->
+    {% if budget_alert %}
+    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        <i class="fas fa-exclamation-triangle"></i> {{ budget_alert }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    {% endif %}
+
+    <!-- Charts -->
+    <div class="row g-4 mb-4">
+        <div class="col-md-6">
+            <div class="card shadow-sm border-0">
+                <div class="card-body">
+                    <h5 class="text-center mb-3">Expenses by Category</h5>
+                    <canvas id="barChart"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card shadow-sm border-0">
+                <div class="card-body">
+                    <h5 class="text-center mb-3">Expense Distribution</h5>
+                    <canvas id="pieChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Expenses -->
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-white">
+            <h5 class="mb-0">Recent Expenses</h5>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Category</th>
+                            <th>Amount</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for expense in recent_expenses %}
+                        <tr>
+                            <td>{{ expense.date.strftime('%Y-%m-%d') }}</td>
+                            <td>{{ expense.category }}</td>
+                            <td>₹{{ expense.amount }}</td>
+                            <td>{{ expense.description or '-' }}</td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="4" class="text-center">No recent expenses. <a href="{{ url_for('expenses.add_expense') }}">Add your first expense!</a></td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <a href="{{ url_for('expenses.view_expenses') }}" class="btn btn-sm btn-primary">View All</a>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const categories = {{ categories | tojson }};
+    const amounts = {{ amounts | tojson }};
+
+    // Bar Chart
+    new Chart(document.getElementById('barChart'), {
+        type: 'bar',
+        data: {
+            labels: categories,
+            datasets: [{
+                label: 'Expenses (₹)',
+                data: amounts,
+                backgroundColor: '#4ea8df'
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { display: false }
+            }
+        }
+    });
+
+    // Pie Chart
+    new Chart(document.getElementById('pieChart'), {
+        type: 'pie',
+        data: {
+            labels: categories,
+            datasets: [{
+                data: amounts,
+                backgroundColor: ['#4ecedf', '#1cc88a', '#366dcc', '#f6c23e', '#e74a3b', '#858796']
+            }]
+        },
+        options: {
+            responsive: true
+        }
+    });
+</script>
+{% endblock %}

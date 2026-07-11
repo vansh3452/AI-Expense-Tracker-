@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-header bg-info text-white">
+                    <h4 class="mb-0">Scan Receipt</h4>
+                </div>
+                <div class="card-body">
+                    <form method="POST" enctype="multipart/form-data">
+                        <div class="mb-3">
+                            <label class="form-label">Upload Receipt Image</label>
+                            <input type="file" name="receipt" class="form-control" accept="image/*" required>
+                            <small class="text-muted">Supported formats: JPG, PNG, JPEG</small>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">Scan Receipt</button>
+                    </form>
+
+                    {% if text %}
+                    <div class="mt-4">
+                        <h5>Extracted Text</h5>
+                        <pre class="bg-light p-3 rounded">{{ text }}</pre>
+                    </div>
+                    {% endif %}
+
+                    {% if receipt and receipt.total %}
+                    <div class="alert alert-success mt-3">
+                        <strong>Detected Total:</strong> ₹{{ receipt.total }}
+                        {% if receipt.store %}
+                        <br><strong>Store:</strong> {{ receipt.store }}
+                        {% endif %}
+                        {% if receipt.date %}
+                        <br><strong>Date:</strong> {{ receipt.date }}
+                        {% endif %}
+                        {% if category %}
+                        <br><strong>Predicted Category:</strong> {{ category }}
+                        {% endif %}
+                    </div>
+                    <a class="btn btn-success" href="{{ url_for('expenses.add_expense', amount=receipt.total, category=category) }}">
+                        Add Expense Automatically
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

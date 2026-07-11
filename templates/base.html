@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Smart Expense Tracker</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    <style>
+        body {
+            background-color: #f4f6f9;
+        }
+        /* Sidebar */
+        .sidebar {
+            height: 100vh;
+            background: #343a40;
+            padding-top: 20px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 70px;           /* collapsed width (icons only) */
+            z-index: 100;
+            transition: width 0.3s ease;
+            overflow-x: hidden;
+            white-space: nowrap;
+        }
+        .sidebar.expanded {
+            width: 250px;          /* expanded width */
+        }
+        /* Sidebar header */
+        .sidebar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 15px 20px 15px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            margin-bottom: 10px;
+        }
+        .sidebar-header h4 {
+            margin: 0;
+            color: white;
+            font-size: 1.2rem;
+            transition: opacity 0.2s;
+        }
+        .sidebar.collapsed .sidebar-header h4 {
+            display: none;
+        }
+        .toggle-btn {
+            background: transparent;
+            border: none;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            padding: 0;
+            line-height: 1;
+        }
+        /* Sidebar links */
+        .sidebar a {
+            color: white;
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            text-decoration: none;
+            transition: 0.3s;
+        }
+        .sidebar a i {
+            width: 25px;
+            font-size: 1.2rem;
+            margin-right: 12px;
+            text-align: center;
+        }
+        .sidebar a span {
+            transition: opacity 0.2s;
+        }
+        /* Hide text when collapsed */
+        .sidebar.collapsed a span {
+            display: none;
+        }
+        .sidebar a:hover {
+            background: #495057;
+            padding-left: 20px;
+        }
+        .sidebar .active {
+            background: #007bff;
+        }
+        /* Main content */
+        .main-content {
+            margin-left: 70px;      /* match collapsed sidebar width */
+            padding: 20px;
+            transition: margin-left 0.3s ease;
+        }
+        .sidebar.expanded + .main-content {
+            margin-left: 250px;     /* match expanded sidebar width */
+        }
+        .card {
+            border-radius: 12px;
+            transition: transform 0.2s ease;
+        }
+        .card:hover {
+            transform: scale(1.02);
+        }
+        .btn {
+            border-radius: 8px;
+        }
+        /* Mobile: when collapsed, hide completely (width 0) */
+        @media (max-width: 768px) {
+            .sidebar.collapsed {
+                width: 0;
+            }
+            .sidebar.collapsed + .main-content {
+                margin-left: 0;
+            }
+            .sidebar.expanded {
+                width: 250px;
+                box-shadow: 2px 0 5px rgba(0,0,0,0.2);
+            }
+            .sidebar.expanded + .main-content {
+                margin-left: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+   <div class="container mt-3" id="flashMessages">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+</div>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-md-2 p-0 sidebar collapsed" id="sidebar">
+                <div class="sidebar-header">
+                    <h4>Expense Tracker</h4>
+                    <button class="toggle-btn" id="toggleSidebarBtn">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                </div>
+                {% if current_user.is_authenticated %}
+                    {% if current_user.is_admin %}
+                        <a href="{{ url_for('main.admin') }}">
+                            <i class="fas fa-tachometer-alt me-2"></i>
+                            <span>Admin Panel</span>
+                        </a>
+                    {% endif %}
+                    <a href="{{ url_for('main.home') }}">
+                        <i class="fas fa-home me-2"></i>
+                        <span>Dashboard</span>
+                    </a>
+                    <a href="{{ url_for('expenses.view_expenses') }}">
+                        <i class="fas fa-list me-2"></i>
+                        <span>View Expenses</span>
+                    </a>
+                    <a href="{{ url_for('expenses.add_expense') }}">
+                        <i class="fas fa-plus-circle me-2"></i>
+                        <span>Add Expense</span>
+                    </a>
+                    <a href="{{ url_for('expenses.scan_receipt') }}">
+                        <i class="fas fa-camera me-2"></i>
+                        <span>Scan Receipt</span>
+                    </a>
+                    <a href="{{ url_for('expenses.import_bank') }}">
+                        <i class="fas fa-upload me-2"></i>
+                        <span>Import Bank</span>
+                    </a>
+                    <a href="{{ url_for('auth.profile') }}">
+                        <i class="fas fa-user me-2"></i>
+                        <span>Profile</span>
+                    </a>
+                    <a href="{{ url_for('auth.logout') }}">
+                        <i class="fas fa-sign-out-alt me-2"></i>
+                        <span>Logout</span>
+                    </a>
+                {% endif %}
+            </div>
+
+            <!-- Main Content -->
+            <div class="col-md-10 main-content" id="mainContent">
+                {% block content %}{% endblock %}
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Highlight current page in sidebar
+        document.querySelectorAll('.sidebar a').forEach(link => {
+            if (link.href === window.location.href) {
+                link.classList.add('active');
+            }
+        });
+
+        // Sidebar toggle
+        const toggleBtn = document.getElementById('toggleSidebarBtn');
+        const sidebar = document.getElementById('sidebar');
+
+        // Load saved state: 'collapsed' is true by default (icon-only)
+        const isCollapsed = localStorage.getItem('sidebarCollapsed') !== 'false';
+        if (isCollapsed) {
+            sidebar.classList.add('collapsed');
+            sidebar.classList.remove('expanded');
+        } else {
+            sidebar.classList.remove('collapsed');
+            sidebar.classList.add('expanded');
+        }
+
+        toggleBtn.addEventListener('click', () => {
+            const currentlyCollapsed = sidebar.classList.contains('collapsed');
+            if (currentlyCollapsed) {
+                sidebar.classList.remove('collapsed');
+                sidebar.classList.add('expanded');
+                localStorage.setItem('sidebarCollapsed', 'false');
+            } else {
+                sidebar.classList.add('collapsed');
+                sidebar.classList.remove('expanded');
+                localStorage.setItem('sidebarCollapsed', 'true');
+            }
+        });
+    </script>
+</body>
+</html>

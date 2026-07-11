@@ -1,0 +1,65 @@
+text,category
+burger king,Food
+pizza hut,Food
+starbucks coffee,Food
+mcdonalds,Food
+kfc,Food
+subway,Food
+restaurant dinner,Food
+cafe,Food
+food delivery,Food
+taco bell,Food
+wendys,Food
+dominos pizza,Food
+supermarket grocery,Groceries
+walmart groceries,Groceries
+grocery store,Groceries
+aldi,Groceries
+target grocery,Groceries
+whole foods,Groceries
+trader joes,Groceries
+kroger,Groceries
+uber ride,Transport
+uber,Transport
+lyft,Transport
+taxi to airport,Transport
+taxi,Transport
+petrol pump,Transport
+gas station petrol,Transport
+bus ticket,Transport
+train fare,Transport
+subway card,Transport
+car rental,Transport
+amazon purchase,Shopping
+amazon echo device,Shopping
+online shopping flipkart,Shopping
+zara clothing purchase,Shopping
+nike store,Shopping
+flipkart,Shopping
+clothing purchase,Shopping
+mall shopping,Shopping
+best buy,Shopping
+ikea,Shopping
+pharmacy medicine,Health
+pharmacy,Health
+hospital bill,Health
+doctor visit,Health
+dental checkup,Health
+medical clinic,Health
+prescription,Health
+gym membership,Health
+netflix subscription,Entertainment
+netflix,Entertainment
+spotify premium,Entertainment
+movie tickets,Entertainment
+cinema tickets,Entertainment
+concert tickets,Entertainment
+steam game,Entertainment
+amazon prime,Entertainment
+electricity bill,Bills
+water bill,Bills
+internet bill,Bills
+gas bill,Bills
+mobile recharge,Bills
+phone bill,Bills
+utilities,Bills

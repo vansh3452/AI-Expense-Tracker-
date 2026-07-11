@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow">
+                <div class="card-header bg-success text-white">
+                    <h4 class="mb-0">Add New Expense</h4>
+                </div>
+                <div class="card-body">
+                    <form method="POST">
+                        <div class="mb-3">
+                            <label class="form-label">Amount (₹)</label>
+                            <input class="form-control" name="amount" 
+                                   value="{{ pre_amount or '' }}" 
+                                   placeholder="Enter amount" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Category</label>
+                            <select class="form-control" name="category" required>
+                                <option value="">Select Category</option>
+                                <option value="Food" {% if pre_category == 'Food' %}selected{% endif %}>Food</option>
+                                <option value="Groceries" {% if pre_category == 'Groceries' %}selected{% endif %}>Groceries</option>
+                                <option value="Transport" {% if pre_category == 'Transport' %}selected{% endif %}>Transport</option>
+                                <option value="Shopping" {% if pre_category == 'Shopping' %}selected{% endif %}>Shopping</option>
+                                <option value="Health" {% if pre_category == 'Health' %}selected{% endif %}>Health</option>
+                                <option value="Bills">Bills</option>
+                                <option value="Entertainment">Entertainment</option>
+                                <option value="Other" {% if pre_category == 'Other' %}selected{% endif %}>Other</option>
+                            </select>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Date</label>
+                            <input type="date" class="form-control" name="date" 
+                                   value="{{ pre_date or now }}" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Description</label>
+                            <textarea class="form-control" name="description" rows="3" 
+                                      placeholder="Enter description (optional)"></textarea>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-success w-100">Add Expense</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

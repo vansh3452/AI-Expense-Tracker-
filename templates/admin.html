@@ -1,0 +1,216 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container-fluid">
+    <h2 class="mb-4">Admin Dashboard</h2>
+
+    <!-- Statistics Cards -->
+    <div class="row g-4 mb-4">
+        <div class="col-md-3">
+            <div class="card bg-primary text-white shadow">
+                <div class="card-body">
+                    <h5 class="card-title">Total Users</h5>
+                    <h2>{{ total_users }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-success text-white shadow">
+                <div class="card-body">
+                    <h5 class="card-title">Total Expenses</h5>
+                    <h2>{{ total_expenses }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-warning text-white shadow">
+                <div class="card-body">
+                    <h5 class="card-title">Total Amount</h5>
+                    <h2>₹{{ total_amount }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-info text-white shadow">
+                <div class="card-body">
+                    <h5 class="card-title">Average Expense</h5>
+                    <h2>₹{{ avg_expense }}</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- USERS table -->
+        <div class="col-md-6">
+            <div class="card shadow-lg mb-4">
+                <div class="card-header bg-dark text-white">
+                    <h5 class="mb-0">Users</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover" id="usersTable">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Username</th>
+                                    <th>Email</th>
+                                    <th>Admin</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for user in users %}
+                                <tr>
+                                    <td>{{ user.id }}</td>
+                                    <td>{{ user.username }}</td>
+                                    <td>{{ user.email }}</td>
+                                    <td>{{ 'Yes' if user.is_admin else 'No' }}</td>
+                                    <td>
+                                        {% if not user.is_admin or user.id != current_user.id %}
+                                        <a href="{{ url_for('main.delete_user', id=user.id) }}" class="btn btn-danger btn-sm" 
+                                           onclick="return confirm('Delete user {{ user.username }}?')">Delete</a>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- EXPENSES with working bulk delete -->
+        <div class="col-md-6">
+            <div class="card shadow-lg mb-4">
+                <div class="card-header bg-dark text-white">
+                    <h5 class="mb-0">All Expenses ({{ all_expenses|length }})</h5>
+                </div>
+                <div class="card-body">
+                    <!-- Search Form -->
+                    <form method="GET" action="{{ url_for('main.admin') }}" class="row mb-3">
+                        <div class="col-md-9">
+                            <input type="text" name="search" class="form-control" 
+                                   placeholder="Search by description, category, amount, or user..." 
+                                   value="{{ search_term if search_term else '' }}">
+                        </div>
+                        <div class="col-md-3">
+                            <button type="submit" class="btn btn-primary w-100">Search</button>
+                        </div>
+                    </form>
+                    {% if search_term %}
+                    <div class="mb-2">
+                        <a href="{{ url_for('main.admin') }}" class="btn btn-sm btn-secondary">Clear Search</a>
+                        <span class="text-muted ms-2">Showing results for "{{ search_term }}"</span>
+                    </div>
+                    {% endif %}
+
+                    <!-- Delete All Button -->
+                    <div class="mb-3">
+                        <button type="button" id="deleteAllExpensesBtn" class="btn btn-danger btn-sm">
+                            <i class="fas fa-trash-alt"></i> Delete ALL Expenses (System‑wide)
+                        </button>
+                        <small class="text-muted ms-2">⚠️ This will delete EVERY expense in the system (all users).</small>
+                    </div>
+
+                    <!-- Bulk Delete Form -->
+                    <form method="POST" id="adminBulkDeleteForm" action="{{ url_for('main.bulk_delete_expenses_admin') }}">
+                        <div class="table-responsive" style="max-height: 500px; overflow-y: auto;">
+                            <table class="table table-hover" id="expensesTable">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th><input type="checkbox" id="selectAllExpenses"></th>
+                                        <th>ID</th>
+                                        <th>User</th>
+                                        <th>Category</th>
+                                        <th>Amount</th>
+                                        <th>Description</th>
+                                        <th>Date</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for e in all_expenses %}
+                                    <tr>
+                                        <td><input type="checkbox" name="expense_ids" value="{{ e.id }}" class="expense-checkbox-admin"></td>
+                                        <td>{{ e.id }}</td>
+                                        <td>{{ e.user.username if e.user else 'Deleted User' }}</td>
+                                        <td>{{ e.category }}</td>
+                                        <td>₹{{ e.amount }}</td>
+                                        <td>{{ e.description or '-' }}</td>
+                                        <td>{{ e.date.strftime('%Y-%m-%d') }}</td>
+                                        <td>
+                                            <a href="{{ url_for('main.delete_expense_admin', id=e.id) }}" class="btn btn-danger btn-sm"
+                                               onclick="return confirm('Delete this expense?')">Delete</a>
+                                        </td>
+                                    </tr>
+                                    {% else %}
+                                    <tr>
+                                        <td colspan="8" class="text-center">No expenses found.｝
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="mt-3">
+                            <button type="submit" class="btn btn-danger" id="adminDeleteSelectedBtn" disabled>Delete Selected</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Separate form for system‑wide delete -->
+<form method="POST" id="deleteAllExpensesForm" action="{{ url_for('main.delete_all_expenses') }}"></form>
+
+<script>
+    // Bulk delete for expenses table (current page only)
+    const selectAllExp = document.getElementById('selectAllExpenses');
+    const expCheckboxes = document.querySelectorAll('.expense-checkbox-admin');
+    const adminDeleteBtn = document.getElementById('adminDeleteSelectedBtn');
+
+    function updateAdminDeleteBtn() {
+        const anyChecked = Array.from(expCheckboxes).some(cb => cb.checked);
+        adminDeleteBtn.disabled = !anyChecked;
+    }
+
+    if (selectAllExp) {
+        selectAllExp.addEventListener('change', function() {
+            expCheckboxes.forEach(cb => cb.checked = selectAllExp.checked);
+            updateAdminDeleteBtn();
+        });
+    }
+    expCheckboxes.forEach(cb => {
+        cb.addEventListener('change', updateAdminDeleteBtn);
+    });
+
+    // Admin bulk delete confirmation
+    const bulkForm = document.getElementById('adminBulkDeleteForm');
+    if (bulkForm) {
+        bulkForm.addEventListener('submit', function(e) {
+            const selected = Array.from(expCheckboxes).filter(cb => cb.checked).length;
+            if (selected === 0) {
+                e.preventDefault();
+                alert('Please select at least one expense to delete.');
+            } else {
+                if (!confirm(`Delete ${selected} selected expense(s)?`)) {
+                    e.preventDefault();
+                }
+            }
+        });
+    }
+
+    // System‑wide delete all expenses (for admin)
+    const deleteAllBtn = document.getElementById('deleteAllExpensesBtn');
+    if (deleteAllBtn) {
+        deleteAllBtn.addEventListener('click', function() {
+            if (confirm('⚠️ DANGER: This will delete EVERY expense in the system (all users). This action is irreversible. Are you absolutely sure?')) {
+                document.getElementById('deleteAllExpensesForm').submit();
+            }
+        });
+    }
+</script>
+{% endblock %}
