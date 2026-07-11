@@ -277,11 +277,11 @@ Add screenshots here.
 
 ### Login
 
-![Login](Screenshots/login.png)
+![Login](Screenshots/Login.png)
 
 ### Dashboard
 
-![Dashboard](Screenshots/dashboard.png)
+![Dashboard](Screenshots/Dashboard.png)
 
 ### Receipt Scanner
 
