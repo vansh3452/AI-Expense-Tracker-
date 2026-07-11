@@ -289,19 +289,19 @@ Add screenshots here.
 
 ### 
 
-![Expenses](screenshots/Expenses.png)
+![Expenses](Screenshots/Expenses.png)
 
 ### Dashboard
 
-![Admin-Panel](screenshots/admin-panel.png)
+![Admin-Panel](Screenshots/admin-panel.png)
 
-### Receipt Scanner
+### Bank Import
 
-![Bank-Import](screenshots/Bank-Import.png)
+![Bank-Import](Screenshots/Bank-Import.png)
 
 ### Profile
 
-![Profile](screenshots/profile.png)
+![Profile](Screenshots/profile.png)
 
 # 📋 Requirements
 
