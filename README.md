@@ -287,7 +287,7 @@ Add screenshots here.
 
 ![Scan-Receipt](Screenshots/Scan-Receipt.png)
 
-### 
+### Expenses
 
 ![Expenses](Screenshots/Expenses.png)
 
