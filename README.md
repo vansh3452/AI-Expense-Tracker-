@@ -285,7 +285,7 @@ Add screenshots here.
 
 ### Receipt Scanner
 
-![Scan-Receipt](Screenshots/Scan Receipt.png)
+![Scan-Receipt](Screenshots/Scan-Receipt.png)
 
 ### 
 
@@ -293,11 +293,11 @@ Add screenshots here.
 
 ### Dashboard
 
-![Admin-Panel](screenshots/admin panel.png)
+![Admin-Panel](screenshots/admin-panel.png)
 
 ### Receipt Scanner
 
-![Bank-Import](screenshots/Bank Import.png)
+![Bank-Import](screenshots/Bank-Import.png)
 
 ### Profile
 
